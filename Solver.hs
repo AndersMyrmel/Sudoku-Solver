@@ -1,5 +1,5 @@
 import Data.List
-import Data.Maybe
+import Data.Maybe (fromJust)
 
 getRow :: [[Int]] -> Int -> [Int]
 getRow arr index = arr!!index
@@ -31,7 +31,6 @@ solve :: [[Int]] -> Bool
 solve arr = do
     let (row, col) = findFirst arr
     False
-        
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
