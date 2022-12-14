@@ -16,6 +16,9 @@ printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
 findFirst :: [[Int]] -> Int
 findFirst arr = fromJust (elemIndex 0 (concat arr))
 
+indexToGrid :: Int -> (Int, Int)
+indexToGrid index = (index`div`9, index`mod`9)
+
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
                 ,[6,0,0,0,7,5,0,0,9]
@@ -30,5 +33,6 @@ main = do
     let col = getCol board 0
     let eight = getIndex board 0 1
     printBoard board
-    print(findFirst board)
+    let test = indexToGrid 12
+    print test
     
