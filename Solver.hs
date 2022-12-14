@@ -1,16 +1,20 @@
 import Data.List
+import Data.Maybe
 
 getRow :: [[Int]] -> Int -> [Int]
-getRow list index = list!!index
+getRow arr index = arr!!index
 
 getCol :: [[Int]] -> Int -> [Int]
-getCol list index = transpose list!!index
+getCol arr index = transpose arr!!index
 
 getIndex :: [[Int]] -> Int -> Int -> Int
-getIndex list row col = list!!row!!col
+getIndex arr row col = arr!!row!!col
 
 printBoard :: [[Int]] -> IO()
-printBoard list = putStr $ unlines $ map (unwords . map show) $ list
+printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
+
+findFirst :: [[Int]] -> Int
+findFirst arr = fromJust (elemIndex 0 (concat arr))
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
@@ -26,4 +30,5 @@ main = do
     let col = getCol board 0
     let eight = getIndex board 0 1
     printBoard board
-    print eight
+    print(findFirst board)
+    
