@@ -17,7 +17,9 @@ printBoard :: [[Int]] -> IO()
 printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
 
 findFirst :: [[Int]] -> (Int, Int)
-findFirst arr = indexToGrid (fromJust (elemIndex 0 (concat arr)))
+findFirst arr
+    | (elemIndex 0 (concat arr)) == Nothing = (-1, -1)
+    | otherwise = indexToGrid (fromJust (elemIndex 0 (concat arr)))
 
 indexToGrid :: Int -> (Int, Int)
 indexToGrid index = (index`div`9, index`mod`9)
@@ -25,10 +27,10 @@ indexToGrid index = (index`div`9, index`mod`9)
 isLegal :: [[Int]] -> Int -> Int -> Int -> Bool
 isLegal arr row col num = notElem num (getRow arr row) && notElem num (getCol arr col) && notElem num (getBlock arr row col)
 
---solve :: [[Int]] -> Bool
---solve arr = solve arr
---    where
---        empty = findFirst arr
+solve :: [[Int]] -> Bool
+solve arr = do
+    let (row, col) = findFirst arr
+    False
         
 
 main = do
@@ -48,5 +50,6 @@ main = do
     let res = isLegal board 1 1 4
     print res
     let (row, col) = findFirst board
-    print [row, col]
+    print [row,col]
+    --print(elemIndex 10 (concat(board)))
     
