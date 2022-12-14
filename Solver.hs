@@ -7,6 +7,9 @@ getRow arr index = arr!!index
 getCol :: [[Int]] -> Int -> [Int]
 getCol arr index = transpose arr!!index
 
+getBlock :: [[Int]] -> Int -> Int -> [Int]
+getBlock arr row col = (map concat [(map  (take 3 . drop i) . (take 3 . drop j)) arr | i <- [0, 3, 6], j <- [0, 3, 6]])!!((row`div`3*3) + (col`div`3))
+
 getIndex :: [[Int]] -> Int -> Int -> Int
 getIndex arr row col = arr!!row!!col
 
@@ -33,6 +36,6 @@ main = do
     let col = getCol board 0
     let eight = getIndex board 0 1
     printBoard board
-    let test = indexToGrid 12
-    print test
+    let block = getBlock board 8 8
+    print block
     
