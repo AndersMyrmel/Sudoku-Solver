@@ -25,9 +25,6 @@ findFirst arr
     | (elemIndex 0 (concat arr)) == Nothing = (-1, -1)
     | otherwise = indexToGrid (fromJust (elemIndex 0 (concat arr)))
 
-option :: (MonadPlus m) => [a] -> m a
-option = msum . map return
-
 isLegal :: [[Int]] -> Int -> Int -> Int -> Bool
 isLegal arr row col num = notElem num (getRow arr row) && notElem num (getCol arr col) && notElem num (getBlock arr row col)
 
@@ -36,6 +33,9 @@ isFull arr = 0 `notElem` concat arr
 
 insertNum :: [[a]] -> a -> (Int, Int) -> [[a]]
 insertNum arr num (row,col) = take row arr ++ [take col (arr !! row) ++ [num] ++ drop (col + 1) (arr !! row)] ++ drop (row + 1) arr
+
+option :: (MonadPlus m) => [a] -> m a
+option = msum . map return
 
 solve :: [[Int]] -> [[Int]]
 solve arr
