@@ -11,9 +11,6 @@ getCol arr index = transpose arr!!index
 getBlock :: [[Int]] -> Int -> Int -> [Int]
 getBlock arr row col = (map concat [(map  (take 3 . drop i) . (take 3 . drop j)) arr | i <- [0, 3, 6], j <- [0, 3, 6]])!!((row`div`3*3) + (col`div`3))
 
-getIndex :: [[Int]] -> Int -> Int -> Int
-getIndex arr row col = arr!!row!!col
-
 printBoard :: [[Int]] -> IO()
 printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
 
@@ -53,5 +50,5 @@ main = do
                 ,[0,7,0,3,0,0,0,1,2]
                 ,[1,2,0,0,0,7,4,0,0]
                 ,[0,4,9,2,0,6,0,0,7]]
-                
+
     printBoard $ solve board
