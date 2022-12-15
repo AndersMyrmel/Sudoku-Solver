@@ -44,9 +44,9 @@ fillCells arr ((index, (x:xs)):cells) =
 solve :: [[Int]] -> [[Int]]
 solve arr =
     let possibleValues = getPossibleValues arr in if null possibleValues then arr
-        else let
-            filledCells = fillCells arr possibleValues
-            solvedBoard = solve filledCells in if isSolved solvedBoard then solvedBoard else solve arr
+    else let
+        filledCells = fillCells arr possibleValues
+        solvedBoard = solve filledCells in if isSolved solvedBoard then solvedBoard else solve arr
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
