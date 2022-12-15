@@ -22,8 +22,8 @@ indexToGrid index = (index`div`9, index`mod`9)
 
 findFirst :: [[Int]] -> (Int, Int)
 findFirst arr
-    | (elemIndex 0 (concat arr)) == Nothing = (-1, -1)
-    | otherwise = indexToGrid (fromJust (elemIndex 0 (concat arr)))
+    | (elemIndex 0 $ concat arr) == Nothing = (-1, -1)
+    | otherwise = indexToGrid (fromJust (elemIndex 0 $ concat arr))
 
 isLegal :: [[Int]] -> Int -> Int -> Int -> Bool
 isLegal arr row col num = notElem num (getRow arr row) && notElem num (getCol arr col) && notElem num (getBlock arr row col)
