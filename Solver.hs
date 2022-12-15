@@ -10,11 +10,11 @@ getCol :: [[Int]] -> Int -> [Int]
 getCol arr index = transpose arr!!index
 
 getGrid :: [[Int]] -> (Int, Int) -> [Int]
-getGrid arr (r, c) =
+getGrid arr (row, col) =
     let
-        r' = (r `div` 3) * 3
-        c' = (c `div` 3) * 3
-        sublist = [arr!!i!!j | i <- [r'..r'+2], j <- [c'..c'+2]] in sublist
+        row' = (row `div` 3) * 3
+        col' = (col `div` 3) * 3
+        sublist = [arr!!i!!j | i <- [row'..row'+2], j <- [col'..col'+2]] in sublist
 
 indexToGrid :: Int -> (Int, Int)
 indexToGrid index = (index `div` 9, index `mod` 9)
@@ -31,15 +31,15 @@ replaceNth n newVal (x:xs)
 getPossibleValues :: [[Int]] -> [(Int, [Int])]
 getPossibleValues arr =
     let
-        emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0]
-        possibleValues = map (\(r, c) -> (r * 9 + c, [1..9] \\ (getRow arr r ++ getCol arr c ++ getGrid arr (indexToGrid (r * 9 + c))))) emptyCells in possibleValues
+        emptyCells = [(row, col) | row <- [0..8], col <- [0..8], arr!!row!!col == 0]
+        possibleValues = map (\(row, col) -> (row * 9 + col, [1..9] \\ (getRow arr row ++ getCol arr col ++ getGrid arr (indexToGrid (row * 9 + col))))) emptyCells in possibleValues
 
 fillCells :: [[Int]] -> [(Int, [Int])] -> [[Int]]
 fillCells arr [] = arr
 fillCells arr ((index, (x:xs)):cells) =
     let
-        (r, c) = indexToGrid index
-        newRow = replaceNth r (replaceNth c x (arr!!r)) arr in fillCells newRow cells
+        (row, col) = indexToGrid index
+        newRow = replaceNth row (replaceNth col x (arr!!row)) arr in fillCells newRow cells
 
 solve :: [[Int]] -> [[Int]]
 solve arr =
