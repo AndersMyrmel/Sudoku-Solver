@@ -40,7 +40,7 @@ insertNum arr num (row,col) = take row arr ++ [take col (arr !! row) ++ [num] ++
 solve :: [[Int]] -> [[Int]]
 solve arr
     | isFull arr = arr
-    | otherwise = option [solve (insertNum arr num (findFirst arr)) | num <- [1..9], isLegal arr row col num]
+    | otherwise = option [num | num <- [1..9], isLegal arr row col num] >>= \num -> insertNum arr num (row, col)
     where (row, col) = findFirst arr
 
 main = do
