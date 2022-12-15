@@ -14,19 +14,13 @@ getGrid arr (r, c) =
     let
         r' = (r `div` 3) * 3
         c' = (c `div` 3) * 3
-        sublist = [arr!!i!!j | i <- [r'..r'+2], j <- [c'..c'+2]]
-    in
-        sublist
+        sublist = [arr!!i!!j | i <- [r'..r'+2], j <- [c'..c'+2]] in sublist
 
 indexToGrid :: Int -> (Int, Int)
 indexToGrid index = (index `div` 9, index `mod` 9)
 
 isSolved :: [[Int]] -> Bool
-isSolved arr =
-    let
-        emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0]
-    in
-        null emptyCells
+isSolved arr = let emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0] in null emptyCells
 
 replaceNth :: Int -> a -> [a] -> [a]
 replaceNth _ _ [] = []
@@ -38,31 +32,21 @@ getPossibleValues :: [[Int]] -> [(Int, [Int])]
 getPossibleValues arr =
     let
         emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0]
-        possibleValues = map (\(r, c) -> (r * 9 + c, [1..9] \\ (getRow arr r ++ getCol arr c ++ getGrid arr (indexToGrid (r * 9 + c))))) emptyCells
-    in
-        possibleValues
+        possibleValues = map (\(r, c) -> (r * 9 + c, [1..9] \\ (getRow arr r ++ getCol arr c ++ getGrid arr (indexToGrid (r * 9 + c))))) emptyCells in possibleValues
 
 fillCells :: [[Int]] -> [(Int, [Int])] -> [[Int]]
 fillCells arr [] = arr
 fillCells arr ((index, (x:xs)):cells) =
     let
         (r, c) = indexToGrid index
-        newRow = replaceNth r (replaceNth c x (arr!!r)) arr
-    in
-        fillCells newRow cells
+        newRow = replaceNth r (replaceNth c x (arr!!r)) arr in fillCells newRow cells
 
 solve :: [[Int]] -> [[Int]]
 solve arr =
-    let
-        possibleValues = getPossibleValues arr
-    in
-        if null possibleValues then arr
+    let possibleValues = getPossibleValues arr in if null possibleValues then arr
         else let
             filledCells = fillCells arr possibleValues
-            solvedBoard = solve filledCells
-        in
-            if isSolved solvedBoard then solvedBoard
-            else solve arr
+            solvedBoard = solve filledCells in if isSolved solvedBoard then solvedBoard else solve arr
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
