@@ -1,5 +1,6 @@
 import Data.List
 import Data.Maybe (fromJust)
+import Control.Monad
 
 getRow :: [[Int]] -> Int -> [Int]
 getRow arr index = arr!!index
@@ -27,10 +28,29 @@ indexToGrid index = (index`div`9, index`mod`9)
 isLegal :: [[Int]] -> Int -> Int -> Int -> Bool
 isLegal arr row col num = notElem num (getRow arr row) && notElem num (getCol arr col) && notElem num (getBlock arr row col)
 
-solve :: [[Int]] -> Bool
+option :: (MonadPlus m) => [a] -> m a
+option = msum . map return
+
+isFull :: [[Int]] -> Bool
+isFull arr = 0 `notElem` concat arr
+
+insertNum :: [[a]] -> a -> (Int, Int) -> [[a]]
+insertNum arr num (row,col) = take row arr ++ [take col (arr !! row) ++ [num] ++ drop (col + 1) (arr !! row)] ++ drop (row + 1) arr
+
+solve :: [[Int]] -> Maybe [[Int]]
 solve arr = do
-    let (row, col) = findFirst arr
-    False
+    -- If the board is full, return the solution
+    guard (isFull arr)
+
+    -- Find the next empty cell
+    let maybeCoords = find (\(r, c) -> arr !! r !! c == 0) [(r, c) | r <- [0..8], c <- [0..8]]
+    case maybeCoords of
+        Just (row, col) ->
+            -- Try all possible numbers for the empty cell
+            option [insertNum arr n (row, col) | n <- [1..9], isLegal arr row col n] >>= solve
+        Nothing ->
+            -- No empty cell was found, so return Nothing
+            Nothing
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
@@ -42,13 +62,13 @@ main = do
                 ,[0,7,0,3,0,0,0,1,2]
                 ,[1,2,0,0,0,7,4,0,0]
                 ,[0,4,9,2,0,6,0,0,7]]
-    let row = getRow board 0
-    let col = getCol board 0
-    let eight = getIndex board 0 1
-    printBoard board
-    let res = isLegal board 1 1 4
-    print res
-    let (row, col) = findFirst board
-    print [row,col]
-    --print(elemIndex 10 (concat(board)))
-    
+
+    let board2 = [[8,3,5,4,1,6,9,2,7]
+                ,[2,9,6,8,5,7,4,3,1]
+                ,[4,1,7,2,9,3,6,5,8]
+                ,[5,6,9,1,3,4,7,8,2]
+                ,[1,2,3,6,7,8,5,4,9]
+                ,[7,4,8,5,2,9,1,6,3]
+                ,[6,5,2,7,8,1,3,9,4]
+                ,[9,8,1,3,4,5,2,7,6]
+                ,[3,7,4,9,6,2,8,1,0]]
