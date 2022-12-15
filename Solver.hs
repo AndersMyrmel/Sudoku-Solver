@@ -1,6 +1,7 @@
 import Data.List
-import Data.Maybe (fromJust)
-import Control.Monad
+
+printBoard :: [[Int]] -> IO()
+printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
 
 getRow :: [[Int]] -> Int -> [Int]
 getRow arr index = arr!!index
@@ -8,37 +9,60 @@ getRow arr index = arr!!index
 getCol :: [[Int]] -> Int -> [Int]
 getCol arr index = transpose arr!!index
 
-getBlock :: [[Int]] -> Int -> Int -> [Int]
-getBlock arr row col = (map concat [(map  (take 3 . drop i) . (take 3 . drop j)) arr | i <- [0, 3, 6], j <- [0, 3, 6]])!!((row`div`3*3) + (col`div`3))
-
-printBoard :: [[Int]] -> IO()
-printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
+getGrid :: [[Int]] -> (Int, Int) -> [Int]
+getGrid arr (r, c) =
+    let
+        r' = (r `div` 3) * 3
+        c' = (c `div` 3) * 3
+        sublist = [arr!!i!!j | i <- [r'..r'+2], j <- [c'..c'+2]]
+    in
+        sublist
 
 indexToGrid :: Int -> (Int, Int)
 indexToGrid index = (index `div` 9, index `mod` 9)
 
-findFirst :: [[Int]] -> (Int, Int)
-findFirst arr
-    | (elemIndex 0 $ concat arr) == Nothing = (-1, -1)
-    | otherwise = indexToGrid (fromJust (elemIndex 0 $ concat arr))
+isSolved :: [[Int]] -> Bool
+isSolved arr =
+    let
+        emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0]
+    in
+        null emptyCells
 
-isLegal :: [[Int]] -> Int -> Int -> Int -> Bool
-isLegal arr row col num = notElem num (getRow arr row) && notElem num (getCol arr col) && notElem num (getBlock arr row col)
+replaceNth :: Int -> a -> [a] -> [a]
+replaceNth _ _ [] = []
+replaceNth n newVal (x:xs)
+    | n == 0 = newVal:xs
+    | otherwise = x:replaceNth (n-1) newVal xs
 
-isFull :: [[Int]] -> Bool
-isFull arr = 0 `notElem` concat arr
+getPossibleValues :: [[Int]] -> [(Int, [Int])]
+getPossibleValues arr =
+    let
+        emptyCells = [(r, c) | r <- [0..8], c <- [0..8], arr!!r!!c == 0]
+        possibleValues = map (\(r, c) -> (r * 9 + c, [1..9] \\ (getRow arr r ++ getCol arr c ++ getGrid arr (indexToGrid (r * 9 + c))))) emptyCells
+    in
+        possibleValues
 
-insertNum :: [[a]] -> a -> (Int, Int) -> [[a]]
-insertNum arr num (row,col) = take row arr ++ [take col (arr !! row) ++ [num] ++ drop (col + 1) (arr !! row)] ++ drop (row + 1) arr
-
-option :: (MonadPlus m) => [a] -> m a
-option = msum . map return
+fillCells :: [[Int]] -> [(Int, [Int])] -> [[Int]]
+fillCells arr [] = arr
+fillCells arr ((index, (x:xs)):cells) =
+    let
+        (r, c) = indexToGrid index
+        newRow = replaceNth r (replaceNth c x (arr!!r)) arr
+    in
+        fillCells newRow cells
 
 solve :: [[Int]] -> [[Int]]
-solve arr
-    | isFull arr = arr
-    | otherwise = option [num | num <- [1..9], isLegal arr row col num] >>= \num -> insertNum arr num (row, col)
-    where (row, col) = findFirst arr
+solve arr =
+    let
+        possibleValues = getPossibleValues arr
+    in
+        if null possibleValues then arr
+        else let
+            filledCells = fillCells arr possibleValues
+            solvedBoard = solve filledCells
+        in
+            if isSolved solvedBoard then solvedBoard
+            else solve arr
 
 main = do
     let board = [[7,8,0,4,0,0,1,2,0]
