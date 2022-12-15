@@ -15,7 +15,8 @@ printBoard :: [[Int]] -> IO()
 printBoard arr = putStr $ unlines $ map (unwords . map show) $ arr
 
 indexToGrid :: Int -> (Int, Int)
-indexToGrid index = (index`div`9, index`mod`9)
+indexToGrid index = (index `div` 9, index `mod` 9)
+
 
 findFirst :: [[Int]] -> (Int, Int)
 findFirst arr
